@@ -3,7 +3,6 @@
 
 import random
 import time
-from bs4 import BeautifulSoup
 
 def parseInput(rawCommand):
     """Takes a raw command.  Parses for available responses"""
