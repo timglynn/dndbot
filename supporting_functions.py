@@ -132,8 +132,10 @@ def getWeaponInfo(commandString):
             return_string = return_string + "\n" + weapon
         return return_string
     elif commandString.lower() in allWeapons: 
-        return_string = "Item: " + commandString +"\n" +\
-            str(allWeapons[commandString.lower()])
+        return_string = "Item: " + commandString +"\n" 
+        for item in allWeapons[commandString.lower()]:
+            return_string = return_string + item + " : " +\
+            allWeapons[commandString.lower()][item] + "\n"
         return return_string
     else:
         return_string = "Hmm, I'm not sure I know that item"
@@ -149,8 +151,11 @@ def getArmorInfo(commandString):
             return_string = return_string + "\n" + armor
         return return_string
     elif commandString.lower() in allArmor: 
-        return_string = "Item: " + commandString +"\n" +\
-            str(allArmor[commandString.lower()])
+        return_string = "Item: " + commandString +"\n" 
+        for item in allArmor[commandString.lower()]:
+            return_string = return_string + item + " : " +\
+            allArmor[commandString.lower()][item] + "\n"
+            
         return return_string
     else:
         return_string = "Hmm, I'm not sure I know that item"
