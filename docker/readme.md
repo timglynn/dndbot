@@ -1,7 +1,7 @@
 DockerFile
 ==========
 
-* dndbot is currently running in a docker container
+* `dndbot` is currently running in a docker container on a CentOS 7 host.
 
 ## Build and Run
 1. Put the `Dockerfile` into the directory containing the `dndbot` project
