@@ -3,6 +3,8 @@
 
 import random
 import time
+import requests
+from bs4 import BeautifulSoup
 
 def parseInput(rawCommand):
     """Takes a raw command.  Parses for available responses"""
@@ -48,12 +50,22 @@ def parseInput(rawCommand):
             commandString = commandString + item + " "
         return_string = getArmorInfo(commandString) 
         return return_string
+    elif commandList[0].lower() == "spell":
+        # Remove the command "armor"
+        del commandList[0]
+        commandString = ""
+        for item in commandList:
+            commandString = commandString + item + " "
+        return_string = getSpellInfo(commandString) 
+        return return_string
     else:
         return_string = "Hi! I'm dndbot.  Here's what I can do: \n" +\
-                "Roll some die (@dndbot roll 4d4) \n" +\
-                "Tell you about regular weapons (weapon broadsword or weapon showall)" +\
+                "Roll some die (`@dndbot roll 4d4`) \n" +\
+                "Tell you about regular weapons (weapon broadsword or `weapon showall`)" +\
                 "\n" +\
-                "Tell you about regular armor (armor hide or armor showall)" +\
+                "Tell you about regular armor (`armor hide` or `armor showall`)" +\
+                "\n" +\
+                "Tell you about spells (`spell fireball` or `spell Dispel Magic`)" +\
                 "\n"
         return return_string
 
@@ -182,5 +194,32 @@ def getAllArmorTypes():
     allArmor = buildArmorDictFromFile(allArmor, "./armor/mediumarmor.txt")
     allArmor = buildArmorDictFromFile(allArmor, "./armor/heavyarmor.txt")
     return allArmor
+
+#### Spells
+def getSpellInfo(spellName):
+    url = "http://ephe.github.io/grimoire/spells/"
+    spellName = cleanUpSpellName(spellName)
+    url = url + spellName
+    r = requests.get(url)
+    soup = BeautifulSoup(r.content)
+    paragraphs = soup.find('article').find_all('p')
+    clean_output = ""
+    for paragraph in paragraphs:
+        clean_output = clean_output + paragraph.text + "\n"
+    return clean_output
+
+
+
+
+def cleanUpSpellName(spellName):
+    spellName = spellName.lower().strip()
+    convertedName = ""
+    for char in spellName:
+        if char == " ":
+            char = "-"
+        else:
+            pass
+        convertedName = convertedName + char
+    return convertedName
 
 
