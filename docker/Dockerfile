@@ -7,7 +7,7 @@ RUN	yum install -y epel-release && yum install -y python python-pip
 
 
 # Install the slackclient
-RUN	pip install slackclient 
+RUN	pip install slackclient bs4
 
 ADD	dndbot /usr/local/dndbot/
 
