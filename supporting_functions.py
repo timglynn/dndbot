@@ -10,55 +10,30 @@ def parseInput(rawCommand):
     """Takes a raw command.  Parses for available responses"""
     commandList = rawCommand.split()
     if commandList[0].lower() == "roll":
-        # Remove the command "roll"
-        del commandList[0]
-        if commandList[0] == "a":
-            del commandList[0] 
-            tmpVar = commandList[0]
-            commandList[0] = "1" + tmpVar
-            commandString = commandList[0]
-        elif len(commandList) == 1:
-            commandString = commandList[0]
-        
-        else:
-            try:
-                int(commandList[0])
-                # Let's squish them all together
-                commandString = str()
-                for item in commandList:
-                    commandString = commandString + item
-            except:
-                return_string = "I'm not sure what to roll."
-                return(return_string)
-        return_string = rollSomeDie(commandString)
-        # DEBUG
-        #print(return_string)
+        return_string = parseRoll(commandList)
         return(return_string)
+
+
     elif commandList[0].lower() == "weapon":
-        # Remove the command "weapon"
-        del commandList[0]
-        commandString = ""
-        for item in commandList:
-            commandString = commandString + item + " "
-        return_string = getWeaponInfo(commandString) 
+        commandString = cleanCommandList(commandList)
+        return_string = getWeaponInfo(commandString)
         return return_string
+
+
     elif commandList[0].lower() == "armor":
-        # Remove the command "armor"
-        del commandList[0]
-        commandString = ""
-        for item in commandList:
-            commandString = commandString + item + " "
-        return_string = getArmorInfo(commandString) 
+        commandString = cleanCommandList(commandList)
+        return_string = getArmorInfo(commandString)
         return return_string
+
     elif commandList[0].lower() == "spell":
-        # Remove the command "armor"
-        del commandList[0]
-        commandString = ""
-        for item in commandList:
-            commandString = commandString + item + " "
-        return_string = getSpellInfo(commandString) 
+        commandString = cleanCommandList(commandList)
+        return_string = getSpellInfo(commandString)
         return return_string
+
+    # Return the help string
+
     else:
+    
         return_string = "Hi! I'm dndbot.  Here's what I can do: \n" +\
                 "Roll some die (`@dndbot roll 4d4`) \n" +\
                 "Tell you about regular weapons (weapon broadsword or `weapon showall`)" +\
@@ -67,7 +42,56 @@ def parseInput(rawCommand):
                 "\n" +\
                 "Tell you about spells (`spell fireball` or `spell Dispel Magic`)" +\
                 "\n"
+    
         return return_string
+
+
+
+def parseRoll(commandList):
+    """ Takes a list of command words.  Parses them, calls the required 
+    rolling functions"""
+
+        # Remove the command "roll"
+    del commandList[0]
+    
+    # Let's allow "a" for the singular
+    if commandList[0] == "a":
+        del commandList[0]
+        tmpVar = commandList[0]
+        commandList[0] = "1" + tmpVar
+        commandString = commandList[0]
+    elif len(commandList) == 1:
+        commandString = commandList[0]
+
+
+    else:
+        try:
+            int(commandList[0])
+            # Let's squish them all together
+            commandString = str()
+            for item in commandList:
+                commandString = commandString + item
+        except:
+            return_string = "I'm not sure what to roll."
+            return(return_string)
+        
+    return_string = rollSomeDie(commandString)  
+    return(return_string)
+
+
+
+def cleanCommandList(commandList):
+    """ Takes a list of command words.  Parses them, formats the string
+    to call the info functions"""
+
+    # Pop off the command word
+    del commandList[0]
+    commandString = ""
+    for item in commandList:
+        commandString = commandString + item + " "
+    
+    return(commandString)
+
 
 
 
