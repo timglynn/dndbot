@@ -31,6 +31,7 @@ def parse_slack_output(slack_rtm_output):
 
 
 if __name__ == "__main__":
+    cache = redis.Redis(unix_socket_path='/tmp/redis.sock')
     if slack_conn.rtm_connect():
         backoff_time = 1
         while True:
@@ -39,7 +40,7 @@ if __name__ == "__main__":
                 # DEBUG
               #  print(command)
                 
-                response = parseInput(command)
+                response = parseInput(command, cache)
                 slack_conn.api_call("chat.postMessage", channel=channel,
                     text = response, as_user=True)
             time.sleep(backoff_time)

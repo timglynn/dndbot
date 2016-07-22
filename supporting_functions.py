@@ -5,8 +5,10 @@ import random
 import time
 import requests
 from bs4 import BeautifulSoup
+import redis
 
-def parseInput(rawCommand):
+
+def parseInput(rawCommand, cache):
     """Takes a raw command.  Parses for available responses"""
     commandList = rawCommand.split()
     if commandList[0].lower() == "roll":
@@ -27,7 +29,7 @@ def parseInput(rawCommand):
 
     elif commandList[0].lower() == "spell":
         commandString = cleanCommandList(commandList)
-        return_string = getSpellInfo(commandString)
+        return_string = getSpellInfo(commandString, cache)
         return return_string
 
     # Return the help string
@@ -220,16 +222,20 @@ def getAllArmorTypes():
     return allArmor
 
 #### Spells
-def getSpellInfo(spellName):
+def getSpellInfo(spellName, cache):
     url = "http://ephe.github.io/grimoire/spells/"
     spellName = cleanUpSpellName(spellName)
-    url = url + spellName
-    r = requests.get(url)
-    soup = BeautifulSoup(r.content)
-    paragraphs = soup.find('article').find_all('p')
-    clean_output = ""
-    for paragraph in paragraphs:
-        clean_output = clean_output + paragraph.text + "\n"
+    if checkCache(cache, spellName):
+        clean_output = cache.get(spellName)
+    else:
+        url = url + spellName
+        r = requests.get(url)
+        soup = BeautifulSoup(r.content)
+        paragraphs = soup.find('article').find_all('p')
+        clean_output = ""
+        for paragraph in paragraphs:
+            clean_output = clean_output + paragraph.text + "\n"
+        addCache(cache, spellName, clean_output)
     return clean_output
 
 
@@ -247,3 +253,18 @@ def cleanUpSpellName(spellName):
     return convertedName
 
 
+def checkCache(cache, spellName):
+    """ Checks the local redis cache for spell definition"""
+    if cache.exists(spellName):
+        print(spellName + " is in the local cache")
+        return True
+    else:
+        return False
+
+def addCache(cache, spellName, spellDef):
+    """ Adds a spell definition to the local redis cache """
+    try:
+        cache.set(spellName, spellDef)
+        print("Added " + spellName + " to local cache")
+    except:
+        print("Cannot add to redis cache")
